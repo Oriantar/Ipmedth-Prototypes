@@ -1,58 +1,159 @@
 import * as THREE from "three";
+import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 
-//setup
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffffff);
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-var light = new THREE.DirectionalLight(0xffffff);
-light.position.set(1, 1, 1).normalize();
-scene.add(light);
+let camera, scene, renderer, controls;
+let moveForward = false,
+  moveBackward = false,
+  moveLeft = false,
+  moveRight = false;
+const velocity = new THREE.Vector3();
+const direction = new THREE.Vector3();
 
-//renderer
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setAnimationLoop(animate);
-document.body.appendChild(renderer.domElement);
+init();
+animate();
+function init() {
+  // Scene, Camera, Renderer
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xaaaaaa);
 
-//camera
-camera.position.y = 1.8;
-camera.position.z = 0;
-camera.position.x = 0;
+  camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  camera.position.y = 1.6; // Eye level height
 
-//movement
-document.onkeydown = function (e) {
-  switch (e.key) {
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // PointerLockControls to look around
+  controls = new PointerLockControls(camera, document.body);
+
+  document.addEventListener("click", () => {
+    controls.lock();
+  });
+
+  controls.addEventListener("lock", () => {
+    console.log("Pointer is locked");
+  });
+
+  controls.addEventListener("unlock", () => {
+    console.log("Pointer is unlocked");
+  });
+
+  // Floor for context
+  const floorGeometry = new THREE.PlaneGeometry(100, 100);
+  const floorMaterial = new THREE.MeshBasicMaterial({
+    color: 0x007700,
+  });
+  const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+  floor.rotation.x = -Math.PI / 2;
+  scene.add(floor);
+
+  // Event Listeners for Movement
+  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("keyup", onKeyUp);
+
+  window.addEventListener("resize", onWindowResize);
+}
+function onKeyDown(event) {
+  switch (event.code) {
     case "ArrowUp":
-      camera.position.z -= 0.1;
-      break;
-    case "w":
-      camera.position.z -= 0.1;
-      break;
-    case "ArrowDown":
-      camera.position.z += 0.1;
-      break;
-    case "s":
-      camera.position.z += 0.1;
+    case "KeyW":
+      moveForward = true;
       break;
     case "ArrowLeft":
-      camera.position.x -= 0.1;
+    case "KeyA":
+      moveLeft = true;
       break;
-    case "a":
-      camera.position.x -= 0.1;
+    case "ArrowDown":
+    case "KeyS":
+      moveBackward = true;
       break;
     case "ArrowRight":
-      camera.position.x += 0.1;
-      break;
-    case "d":
-      camera.position.x += 0.1;
+    case "KeyD":
+      moveRight = true;
       break;
   }
-};
+}
+
+function onKeyUp(event) {
+  switch (event.code) {
+    case "ArrowUp":
+    case "KeyW":
+      moveForward = false;
+      break;
+    case "ArrowLeft":
+    case "KeyA":
+      moveLeft = false;
+      break;
+    case "ArrowDown":
+    case "KeyS":
+      moveBackward = false;
+      break;
+    case "ArrowRight":
+    case "KeyD":
+      moveRight = false;
+      break;
+  }
+}
+//setup
+// const scene = new THREE.Scene();
+// scene.background = new THREE.Color(0xffffff);
+// const camera = new THREE.PerspectiveCamera(
+//   75,
+//   window.innerWidth / window.innerHeight,
+//   0.1,
+//   1000
+// );
+// var light = new THREE.DirectionalLight(0xffffff);
+// light.position.set(1, 1, 1).normalize();
+// scene.add(light);
+
+// //renderer
+// const renderer = new THREE.WebGLRenderer();
+// renderer.setSize(window.innerWidth, window.innerHeight);
+// renderer.setAnimationLoop(animate);
+// document.body.appendChild(renderer.domElement);
+
+// //camera
+// camera.position.y = 1.8;
+// camera.position.z = 0;
+// camera.position.x = 0;
+
+//controls
+
+//movement
+// document.onkeydown = function (e) {
+//   switch (e.key) {
+//     case "ArrowUp":
+//       camera.position.z -= 1;
+//       break;
+//     case "w":
+//       camera.position.z -= 1;
+//       break;
+//     case "ArrowDown":
+//       camera.position.z += 1;
+//       break;
+//     case "s":
+//       camera.position.z += 1;
+//       break;
+//     case "ArrowLeft":
+//       camera.position.x -= 1;
+//       break;
+//     case "a":
+//       camera.position.x -= 1;
+//       break;
+//     case "ArrowRight":
+//       camera.position.x += 1;
+//       break;
+//     case "d":
+//       camera.position.x += 1;
+//       break;
+//   }
+// };
 
 //geometry
 export const cube = new THREE.BoxGeometry(1, 1, 1);
@@ -113,6 +214,30 @@ floor.position.y = 0;
 floor.castShadow = true;
 scene.add(floor);
 
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
 function animate() {
-  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+
+  if (controls.isLocked === true) {
+    // Movement logic
+    const delta = 0.1; // Movement speed
+
+    velocity.x -= velocity.x * 10.0 * delta;
+    velocity.z -= velocity.z * 10.0 * delta;
+
+    direction.z = Number(moveForward) - Number(moveBackward);
+    direction.x = Number(moveRight) - Number(moveLeft);
+    direction.normalize(); // Ensure consistent movement in all directions
+
+    if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
+    if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
+
+    controls.moveRight(-velocity.x * delta);
+    controls.moveForward(-velocity.z * delta);
+  }
 }
