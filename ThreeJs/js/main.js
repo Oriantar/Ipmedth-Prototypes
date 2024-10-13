@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
 //setup
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
@@ -21,9 +21,11 @@ document.body.appendChild(renderer.domElement);
 
 //camera
 camera.position.y = 1.8;
-camera.position.z = 5;
+camera.position.z = 0;
+camera.position.x = 0;
+
+//movement
 document.onkeydown = function (e) {
-  console.log(e.key);
   switch (e.key) {
     case "ArrowUp":
       camera.position.z -= 0.1;
@@ -55,7 +57,9 @@ document.onkeydown = function (e) {
 //geometry
 export const cube = new THREE.BoxGeometry(1, 1, 1);
 export const sphere = new THREE.SphereGeometry(1, 16, 16);
-export const plane = new THREE.PlaneGeometry(50, 50);
+export const plane = new THREE.PlaneGeometry(40, 40);
+export const muurtjes = new THREE.BoxGeometry(8, 2, 1);
+export const eieren = new THREE.BoxGeometry(0.1, 0.1, 0.1);
 
 //materials
 export const red = new THREE.MeshBasicMaterial({ color: 0xff0000 });
@@ -67,16 +71,45 @@ export const yellow = new THREE.MeshPhongMaterial({
 });
 
 //objects
-const blitz = new THREE.Mesh(cube, green);
-scene.add(blitz);
+const cube1 = new THREE.Mesh(cube, green);
+cube1.position.z = -3;
+cube1.position.x = 1;
+cube1.position.y = 0.5;
+scene.add(cube1);
 
-const yosti = new THREE.Mesh(sphere, red);
-yosti.position.x = 2;
-scene.add(yosti);
+const cube2 = new THREE.Mesh(cube, green);
+cube2.position.z = -2;
+cube2.position.x = -1;
+cube2.position.y = 0.5;
+scene.add(cube2);
+
+const cube3 = new THREE.Mesh(cube, green);
+cube3.position.z = -2.5;
+cube3.position.x = 0;
+cube3.position.y = 0.5;
+scene.add(cube3);
+
+const cube4 = new THREE.Mesh(cube, green);
+cube4.position.z = 12;
+cube4.position.x = -4;
+cube4.position.y = 0.5;
+scene.add(cube4);
+
+const ei = new THREE.Mesh(eieren, blue);
+ei.position.z = 1;
+ei.position.x = 0;
+ei.position.y = 0.5;
+scene.add(ei);
+
+const muurtje = new THREE.Mesh(muurtjes, red);
+muurtje.position.z = -5;
+muurtje.position.x = -2;
+muurtje.position.y = 1;
+scene.add(muurtje);
 
 const floor = new THREE.Mesh(plane, yellow);
 floor.rotation.x = Math.PI / 2;
-floor.position.y = -1;
+floor.position.y = 0;
 floor.castShadow = true;
 scene.add(floor);
 
