@@ -22,7 +22,7 @@ function init() {
     0.1,
     1000
   );
-  camera.position.y = 1.6; // Eye level height
+  camera.position.y = 1.8; // Eye level height
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -33,14 +33,6 @@ function init() {
 
   document.addEventListener("click", () => {
     controls.lock();
-  });
-
-  controls.addEventListener("lock", () => {
-    console.log("Pointer is locked");
-  });
-
-  controls.addEventListener("unlock", () => {
-    console.log("Pointer is unlocked");
   });
 
   // Floor for context
@@ -58,6 +50,56 @@ function init() {
 
   window.addEventListener("resize", onWindowResize);
 }
+// Initialize Raycaster and Vector for mouse position
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// On mouse move or click, update the mouse position and raycast
+function onMouseMove(event) {
+  // Calculate mouse position in normalized device coordinates (NDC) (-1 to +1) for both components
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  // Update the ray with the camera and mouse position
+  raycaster.setFromCamera(mouse, camera);
+  raycaster.far = 10; // Set the max distance for raycasting
+  // Calculate objects intersecting the ray
+  const intersects = raycaster.intersectObjects(scene.children, true); // true to check children recursively
+
+  // Handle the intersected objects
+  if (intersects.length > 0) {
+    if (intersects[0].object.uuid === "c48f2eb2-d933-4fe1-94ff-41998226fe39")
+      return;
+    if (
+      intersects[0].object.name === "ei" &&
+      intersects[0].object.name !== "eidone"
+    ) {
+      setInterval(() => {
+        scene.remove(intersects[0].object);
+        document.getElementById("egg").style.display = "block";
+      }, 1000);
+    }
+    if (
+      intersects[0].object.name === "cube4" &&
+      document.getElementById("egg").style.display === "block"
+    ) {
+      let z = intersects[0].object.position.z;
+      let x = intersects[0].object.position.x;
+      let y = intersects[0].object.position.y;
+
+      ei.position.z = z;
+      ei.position.x = x;
+      ei.position.y = y + 1;
+      ei.name = "eidone";
+      console.log(ei);
+      scene.add(ei);
+      document.getElementById("egg").style.display = "none";
+    }
+  }
+}
+
+// Add event listener for mouse move or click
+window.addEventListener("mousemove", onMouseMove, false);
 function onKeyDown(event) {
   switch (event.code) {
     case "ArrowUp":
@@ -99,68 +141,14 @@ function onKeyUp(event) {
       break;
   }
 }
-//setup
-// const scene = new THREE.Scene();
-// scene.background = new THREE.Color(0xffffff);
-// const camera = new THREE.PerspectiveCamera(
-//   75,
-//   window.innerWidth / window.innerHeight,
-//   0.1,
-//   1000
-// );
-// var light = new THREE.DirectionalLight(0xffffff);
-// light.position.set(1, 1, 1).normalize();
-// scene.add(light);
-
-// //renderer
-// const renderer = new THREE.WebGLRenderer();
-// renderer.setSize(window.innerWidth, window.innerHeight);
-// renderer.setAnimationLoop(animate);
-// document.body.appendChild(renderer.domElement);
-
-// //camera
-// camera.position.y = 1.8;
-// camera.position.z = 0;
-// camera.position.x = 0;
-
-//controls
-
-//movement
-// document.onkeydown = function (e) {
-//   switch (e.key) {
-//     case "ArrowUp":
-//       camera.position.z -= 1;
-//       break;
-//     case "w":
-//       camera.position.z -= 1;
-//       break;
-//     case "ArrowDown":
-//       camera.position.z += 1;
-//       break;
-//     case "s":
-//       camera.position.z += 1;
-//       break;
-//     case "ArrowLeft":
-//       camera.position.x -= 1;
-//       break;
-//     case "a":
-//       camera.position.x -= 1;
-//       break;
-//     case "ArrowRight":
-//       camera.position.x += 1;
-//       break;
-//     case "d":
-//       camera.position.x += 1;
-//       break;
-//   }
-// };
 
 //geometry
 export const cube = new THREE.BoxGeometry(1, 1, 1);
 export const sphere = new THREE.SphereGeometry(1, 16, 16);
 export const plane = new THREE.PlaneGeometry(40, 40);
 export const muurtjes = new THREE.BoxGeometry(8, 2, 1);
-export const eieren = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+export const eieren = new THREE.SphereGeometry(0.5, 16, 16);
+export const eilepel = new THREE.SphereGeometry(0.1, 16, 16);
 
 //materials
 export const red = new THREE.MeshBasicMaterial({ color: 0xff0000 });
@@ -176,42 +164,49 @@ const cube1 = new THREE.Mesh(cube, green);
 cube1.position.z = -3;
 cube1.position.x = 1;
 cube1.position.y = 0.5;
+cube1.name = "cube";
 scene.add(cube1);
 
 const cube2 = new THREE.Mesh(cube, green);
 cube2.position.z = -2;
 cube2.position.x = -1;
 cube2.position.y = 0.5;
+cube2.name = "cube";
 scene.add(cube2);
 
 const cube3 = new THREE.Mesh(cube, green);
 cube3.position.z = -2.5;
 cube3.position.x = 0;
 cube3.position.y = 0.5;
+cube3.name = "cube";
 scene.add(cube3);
 
 const cube4 = new THREE.Mesh(cube, green);
 cube4.position.z = 12;
 cube4.position.x = -4;
 cube4.position.y = 0.5;
+cube4.name = "cube4";
 scene.add(cube4);
 
-const ei = new THREE.Mesh(eieren, blue);
+const ei = new THREE.Mesh(eieren, yellow);
 ei.position.z = 1;
 ei.position.x = 0;
-ei.position.y = 0.5;
+ei.position.y = 1;
+ei.name = "ei";
 scene.add(ei);
 
 const muurtje = new THREE.Mesh(muurtjes, red);
 muurtje.position.z = -5;
 muurtje.position.x = -2;
 muurtje.position.y = 1;
+muurtje.name = "muurtje";
 scene.add(muurtje);
 
-const floor = new THREE.Mesh(plane, yellow);
+const floor = new THREE.Mesh(plane, green);
 floor.rotation.x = Math.PI / 2;
 floor.position.y = 0;
 floor.castShadow = true;
+floor.name = "floor";
 scene.add(floor);
 
 function onWindowResize() {
@@ -229,15 +224,12 @@ function animate() {
 
     velocity.x -= velocity.x * 10.0 * delta;
     velocity.z -= velocity.z * 10.0 * delta;
-
     direction.z = Number(moveForward) - Number(moveBackward);
     direction.x = Number(moveRight) - Number(moveLeft);
     direction.normalize(); // Ensure consistent movement in all directions
 
-    if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
-    if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
-
-    controls.moveRight(-velocity.x * delta);
-    controls.moveForward(-velocity.z * delta);
+    controls.moveRight(direction.x * delta);
+    controls.moveForward(direction.z * delta);
   }
+  renderer.render(scene, camera);
 }
