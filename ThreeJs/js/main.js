@@ -62,7 +62,7 @@ function onMouseMove(event) {
 
   // Update the ray with the camera and mouse position
   raycaster.setFromCamera(mouse, camera);
-  raycaster.far = 10; // Set the max distance for raycasting
+  raycaster.far = 2; // Set the max distance for raycasting
   // Calculate objects intersecting the ray
   const intersects = raycaster.intersectObjects(scene.children, true); // true to check children recursively
 
@@ -91,7 +91,6 @@ function onMouseMove(event) {
       ei.position.x = x;
       ei.position.y = y + 1;
       ei.name = "eidone";
-      console.log(ei);
       scene.add(ei);
       document.getElementById("egg").style.display = "none";
     }
@@ -143,10 +142,10 @@ function onKeyUp(event) {
 }
 
 //geometry
-export const cube = new THREE.BoxGeometry(1, 1, 1);
+export const cube = new THREE.BoxGeometry(1, 2, 1);
 export const sphere = new THREE.SphereGeometry(1, 16, 16);
 export const plane = new THREE.PlaneGeometry(40, 40);
-export const muurtjes = new THREE.BoxGeometry(8, 2, 1);
+export const muurtjes = new THREE.BoxGeometry(16, 8, 1);
 export const eieren = new THREE.SphereGeometry(0.5, 16, 16);
 export const eilepel = new THREE.SphereGeometry(0.1, 16, 16);
 
@@ -160,26 +159,33 @@ export const yellow = new THREE.MeshPhongMaterial({
 });
 
 //objects
-const cube1 = new THREE.Mesh(cube, green);
-cube1.position.z = -3;
-cube1.position.x = 1;
-cube1.position.y = 0.5;
+const cube1 = new THREE.Mesh(cube, yellow);
+cube1.position.z = -7;
+cube1.position.x = 0;
+cube1.position.y = 1;
 cube1.name = "cube";
 scene.add(cube1);
 
-const cube2 = new THREE.Mesh(cube, green);
-cube2.position.z = -2;
-cube2.position.x = -1;
-cube2.position.y = 0.5;
+const cube2 = new THREE.Mesh(cube, yellow);
+cube2.position.z = -1;
+cube2.position.x = -4;
+cube2.position.y = 1;
 cube2.name = "cube";
 scene.add(cube2);
 
-const cube3 = new THREE.Mesh(cube, green);
-cube3.position.z = -2.5;
-cube3.position.x = 0;
-cube3.position.y = 0.5;
+const cube3 = new THREE.Mesh(cube, yellow);
+cube3.position.z = 4;
+cube3.position.x = -6;
+cube3.position.y = 1;
 cube3.name = "cube";
 scene.add(cube3);
+
+const cube5 = new THREE.Mesh(cube, yellow);
+cube5.position.z = 4;
+cube5.position.x = -2;
+cube5.position.y = 1;
+cube5.name = "cube";
+scene.add(cube5);
 
 const cube4 = new THREE.Mesh(cube, green);
 cube4.position.z = 12;
@@ -188,7 +194,7 @@ cube4.position.y = 0.5;
 cube4.name = "cube4";
 scene.add(cube4);
 
-const ei = new THREE.Mesh(eieren, yellow);
+const ei = new THREE.Mesh(eieren, red);
 ei.position.z = 1;
 ei.position.x = 0;
 ei.position.y = 1;
@@ -196,9 +202,9 @@ ei.name = "ei";
 scene.add(ei);
 
 const muurtje = new THREE.Mesh(muurtjes, red);
-muurtje.position.z = -5;
-muurtje.position.x = -2;
-muurtje.position.y = 1;
+muurtje.position.z = -10;
+muurtje.position.x = 0;
+muurtje.position.y = 4;
 muurtje.name = "muurtje";
 scene.add(muurtje);
 
