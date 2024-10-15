@@ -17,6 +17,13 @@ const updateStopwatch = () => {
   const currentTime = new Date().getTime();
   const elapsedTime = currentTime - startTime;
   console.log(`Elapsed time: ${Math.floor(elapsedTime / 1000)} seconds`);
+  fetch('http://localhost:3000/time', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ time: Math.floor(elapsedTime / 1000), timestamp: new Date().toLocaleString('NL-nl') }),
+  }).catch((error) => console.error('Error:', error));
 }
 
 AFRAME.registerComponent('collider-check', {

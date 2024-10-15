@@ -44,23 +44,23 @@ def log_keys():
         return f"Error logging data: {str(e)}", 500
 
 
-@app.route('/clicks', methods=['POST'])
-def log_clicks():
+@app.route('/time', methods=['POST'])
+def log_time():
     try:
         data = request.get_json()
-        clicks = data.get('clicks')
-        timestamp = data.get('timestamp')
+        time = data.get('time')
 
-        if clicks is None or timestamp is None:
-            return "Error: Missing 'clicks' or 'timestamp' in request data", 400
+
+        if time is None:
+            return "Error: Missing 'time' ", 400
 
         with open(LOG_FILE, 'a') as f:
-            f.write(f"{timestamp} - Clicks: {clicks}\n")
+            f.write(f" Time to complete: {time}\n")
 
         return "Data logged successfully", 200
 
     except Exception as e:
-        return f"Error logging data: {str(e)}", 500
+        return f"Error logging data: {str(e)}", 50
 
 if __name__ == '__main__':
     app.run(debug=True, port=3000)
