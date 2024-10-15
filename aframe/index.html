@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type='module' src="./main.js" ></script>
+    <title>A-Frame Demo app</title>
+  </head>
+  <body>
+    <a-scene cursor__mouse="rayOrigin: mouse"  cursor__xrselect="rayOrigin: xrselect"
+
+     xr-mode-ui="enabled:false;" >
+      <a-entity position="0 2.2 4" >
+        <a-entity camera look-controls wasd-controls id='js--camera' >
+          <a-entity
+            position="0 0 -3"
+            geometry="primitive: ring; radiusInner: 0.05; radiusOuter: 0.1;"
+            material="color: cyan; shader: flat"
+            cursor="maxDistance: 10; fuse: true"
+            collider-check raycaster="objects: .collidable, .finish"
+
+          >
+            <a-animation
+              begin="click"
+              easing="ease-in"
+              attribute="scale"
+              fill="forwards"
+              from="0.2 0.2 0.2"
+              to="1 1 1"
+              dur="150"
+            ></a-animation>
+            <a-animation
+              begin="fusing"
+              easing="ease-in"
+              attribute="scale"
+              fill="backwards"
+              from="1 1 1"
+              to="0.2 0.2 0.2"
+              dur="1500"
+            ></a-animation>
+          </a-entity>
+        </a-entity>
+      </a-entity>
+
+      <!-- Cube 1 turn around -->
+      <a-box
+        position="0 1 -7"
+        width="1"
+        height="2"
+        depth="1"
+        color="black"
+
+      ></a-box>
+      <!-- Cube 2 -->
+      <a-box
+        position="-4 1 -1"
+        width="1"
+        height="2"
+        depth="1"
+        color="black"
+
+      ></a-box>
+      <!-- Cube 3 -->
+      <a-box
+        position="-6 1 4"
+        width="1"
+        height="2"
+        depth="1"
+        color="black"
+
+      ></a-box>
+       <!-- Cube 5 -->
+      <a-box
+        position="-2 1 4"
+        width="1"
+        height="2"
+        depth="1"
+        color="black"
+
+      ></a-box>
+      <!-- End-->
+      <a-box
+        position="-4 0.5 12"
+        class='finish'
+        width="1"
+        height="2"
+        depth="1"
+        color="green"
+
+      >
+      <a-text value="Einde" width="4" align="center" color="#000" ></a-text>
+    </a-box>
+      <!-- Egg -->
+      <a-sphere color="#FFF" radius="0.2" position="0 1 1" class="collidable"></a-sphere>
+      <!-- Wall -->
+       <a-box
+        position="0 4 -10"
+        rotation="0 0 0"
+        width="16"
+        height="8"
+        depth="1"
+        color="blue"
+      ></a-box>
+       <!-- Floor -->
+      <a-plane
+
+        position="0 0 0"
+        rotation="-90 0 0"
+        width="40"
+        height="40"
+        depth="1"
+        color="#007700"
+      ></a-plane>
+    </a-scene>
+  </body>
+</html>
