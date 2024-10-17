@@ -93,6 +93,7 @@ function onMouseMove(event) {
       ei.name = "eidone";
       scene.add(ei);
       document.getElementById("egg").style.display = "none";
+      location.reload();
     }
   }
 }
