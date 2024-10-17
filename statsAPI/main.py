@@ -4,7 +4,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-LOG_FILE = 'test_log.txt'
+LOG_FILE = 'test_log.log'
 
 @app.route('/performance', methods=['POST'])
 def log_data():

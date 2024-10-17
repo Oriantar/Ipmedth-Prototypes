@@ -1,5 +1,30 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+let frames = 0, prevTime = performance.now();
+var startTime;
+var stopwatchInterval;
+var elapsedPausedTime = 0;
+
+function timer() {
+  if (!stopwatchInterval) {
+    startTime = new Date().getTime() - elapsedPausedTime; // get the starting time by subtracting the elapsed paused time from the current time
+    stopwatchInterval = setInterval(updateStopwatch, 1000); // update every second
+  }
+}
+
+
+const updateStopwatch = () => {
+  const currentTime = new Date().getTime();
+  const elapsedTime = currentTime - startTime;
+  console.log(`Elapsed time: ${Math.floor(elapsedTime / 1000)} seconds`);
+  fetch('http://localhost:3000/time', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ time: Math.floor(elapsedTime / 1000), timestamp: new Date().toLocaleString('NL-nl') }),
+  }).catch((error) => console.error('Error:', error));
+}
 
 let camera, scene, renderer, controls;
 let moveForward = false,
@@ -74,6 +99,7 @@ function onMouseMove(event) {
       intersects[0].object.name === "ei" &&
       intersects[0].object.name !== "eidone"
     ) {
+      timer();
       setInterval(() => {
         scene.remove(intersects[0].object);
         document.getElementById("egg").style.display = "block";
@@ -83,6 +109,9 @@ function onMouseMove(event) {
       intersects[0].object.name === "cube4" &&
       document.getElementById("egg").style.display === "block"
     ) {
+      clearInterval(stopwatchInterval); // stop the interval
+      elapsedPausedTime = new Date().getTime() - startTime; // calculate elapsed paused time
+      stopwatchInterval = null; // reset the interval variable
       let z = intersects[0].object.position.z;
       let x = intersects[0].object.position.x;
       let y = intersects[0].object.position.y;
@@ -92,6 +121,7 @@ function onMouseMove(event) {
       ei.position.y = y + 1;
       ei.name = "eidone";
       scene.add(ei);
+
       document.getElementById("egg").style.display = "none";
       location.reload();
     }
@@ -240,3 +270,54 @@ function animate() {
   }
   renderer.render(scene, camera);
 }
+
+
+function getFps() {
+  // Get stats data (replace with your actual stats)
+  requestAnimationFrame(getFps);
+  console.log("getFps -> getFps");
+  // FPS
+  frames++;
+  const time = performance.now();
+
+  if (time >= prevTime + 1000) {
+    let fps = Math.round((frames * 1000) / (time - prevTime));
+    if (fps !== null) {
+      fetch('http://localhost:3000/performance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fps, timestamp: new Date().toLocaleString('NL-nl') }),
+      }).catch((error) => console.error('Error:', error));
+    }
+
+    frames = 0;
+    prevTime = time;
+  }
+}
+getFps();
+
+const getPressedKeys = () => {
+  let keys = {};
+  document.addEventListener('keydown', (event) => {
+    keys[event.key] = true;
+  });
+  document.addEventListener('keyup', (event) => {
+    keys[event.key] = false;
+  });
+
+  setInterval(() => {
+    fetch('http://localhost:3000/keys', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ keys, timestamp: new Date().toLocaleString('NL-nl') }),
+    }).catch((error) => console.error('Error:', error));
+
+    keys = {};
+  }, 1000);
+}
+
+getPressedKeys();
